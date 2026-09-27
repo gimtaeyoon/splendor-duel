@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2B1E36">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="둘이서 멀리 떨어져서도 즐기는 스플렌더 대결 — 링크 하나로 바로 시작해요.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="스플렌더 대결">
+  <meta name="format-detection" content="telephone=no">
+  <title>스플렌더 대결</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/vendor/mqtt.min.js"></script>
+  <script defer src="js/cards.js"></script>
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/bot.js"></script>
+  <script defer src="js/net.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <!-- 아이콘/보석 스프라이트 (display:none 이면 그라디언트가 안 그려져서 크기 0으로 숨김) -->
+  <svg class="sprite" width="0" height="0" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="gd-white" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#EEF0F4"/><stop offset="1" stop-color="#C3C9D4"/></radialGradient>
+      <radialGradient id="gd-blue" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#8DB2F5"/><stop offset=".5" stop-color="#2F6BDA"/><stop offset="1" stop-color="#173D8A"/></radialGradient>
+      <radialGradient id="gd-green" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#77DDAA"/><stop offset=".5" stop-color="#1E9E62"/><stop offset="1" stop-color="#0E5C38"/></radialGradient>
+      <radialGradient id="gd-red" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#F7A09E"/><stop offset=".5" stop-color="#D8403F"/><stop offset="1" stop-color="#861F1F"/></radialGradient>
+      <radialGradient id="gd-black" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#6E6E7C"/><stop offset=".5" stop-color="#2A2A31"/><stop offset="1" stop-color="#111114"/></radialGradient>
+      <radialGradient id="gd-pearl" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#F3DCE4"/><stop offset="1" stop-color="#CFA6B6"/></radialGradient>
+      <radialGradient id="gd-gold" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#FFEFA8"/><stop offset=".5" stop-color="#E9B832"/><stop offset="1" stop-color="#9A7110"/></radialGradient>
+      <radialGradient id="gd-joker" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#C9C3D1"/><stop offset="1" stop-color="#7E7689"/></radialGradient>
+      <linearGradient id="gd-scroll" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF3E1"/><stop offset="1" stop-color="#E4D2AC"/></linearGradient>
+      <linearGradient id="gd-brass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0CF83"/><stop offset="1" stop-color="#B98C3C"/></linearGradient>
+    </defs>
+
+    <!-- 보석 토큰: 둥근 원판 + 컷 모양 (색을 못 봐도 구별되게) -->
+    <symbol id="tk-white" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-white)" stroke="#9AA3B2" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#9AA3B2" stroke-opacity=".45" stroke-width=".8"/>
+      <g fill="none" stroke="#5B6474" stroke-width="1.5" stroke-linejoin="round"><path d="M14.5 14.5h11l4 5-9.5 11-9.5-11z"/><path d="M10.5 19.5h19M17 14.5l-2 5 5 11 5-11-2-5"/></g>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".7" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-blue" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-blue)" stroke="#163A80" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width=".8"/>
+      <rect x="12.5" y="12.5" width="15" height="15" rx="4.2" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6"/>
+      <rect x="16.3" y="16.3" width="7.4" height="7.4" rx="1.8" fill="#fff" fill-opacity=".3"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".35" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-green" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-green)" stroke="#0C5534" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width=".8"/>
+      <path d="M16.5 10.5h7l4 4v11l-4 4h-7l-4-4v-11z" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M17.6 14.5h4.8v11h-4.8z" fill="#fff" fill-opacity=".3"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".35" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-red" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-red)" stroke="#7A1C1C" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#fff" stroke-opacity=".2" stroke-width=".8"/>
+      <ellipse cx="20" cy="20" rx="6.8" ry="9.8" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6"/>
+      <ellipse cx="20" cy="20" rx="3" ry="5" fill="#fff" fill-opacity=".3"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".35" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-black" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-black)" stroke="#6B6B78" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#fff" stroke-opacity=".15" stroke-width=".8"/>
+      <path d="M20 10.2l8.5 4.9v9.8L20 29.8l-8.5-4.9v-9.8z" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M20 15.3l4 2.35v4.7L20 24.7l-4-2.35v-4.7z" fill="#fff" fill-opacity=".28"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".3" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-pearl" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-pearl)" stroke="#B98A9C" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="9" fill="none" stroke="#9C6F80" stroke-opacity=".75" stroke-width="1.5"/>
+      <circle cx="17" cy="16.8" r="3.2" fill="#fff"/>
+      <path d="M23.6 24.2a6 6 0 0 1-5.4 2" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".6" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <symbol id="tk-gold" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="url(#gd-gold)" stroke="#8C650C" stroke-width="1.4"/>
+      <circle cx="20" cy="20" r="14.6" fill="none" stroke="#7A5608" stroke-opacity=".35" stroke-width=".8"/>
+      <!-- 금괴 (왕관과 헷갈리지 않게: 뾰족한 끝 없이 사다리꼴 덩어리) -->
+      <path d="M9.6 27.2l3.6-11.4h13.6l3.6 11.4z" fill="#FFF2B8" fill-opacity=".5" stroke="#6E4C06" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M13.2 15.8l2.6 4.6h8.4l2.6-4.6M15.8 20.4l-2.4 6.8M24.2 20.4l2.4 6.8" fill="none" stroke="#6E4C06" stroke-width="1.1" stroke-linejoin="round" stroke-opacity=".8"/>
+      <path d="M16.6 17.4h6.8" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-opacity=".75"/>
+      <ellipse cx="13.5" cy="11" rx="5.5" ry="2.8" fill="#fff" opacity=".55" transform="rotate(-32 13.5 11)"/>
+    </symbol>
+    <!-- 조커 보너스: 무지개 고리 -->
+    <symbol id="tk-joker" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.6" fill="#3a3342"/>
+      <g fill="none" stroke-width="6" transform="rotate(-90 20 20)">
+        <circle cx="20" cy="20" r="15" stroke="#EEF0F4" stroke-dasharray="18.85 75.4"/>
+        <circle cx="20" cy="20" r="15" stroke="#2F6BDA" stroke-dasharray="18.85 75.4" stroke-dashoffset="-18.85"/>
+        <circle cx="20" cy="20" r="15" stroke="#1E9E62" stroke-dasharray="18.85 75.4" stroke-dashoffset="-37.7"/>
+        <circle cx="20" cy="20" r="15" stroke="#D8403F" stroke-dasharray="18.85 75.4" stroke-dashoffset="-56.55"/>
+        <circle cx="20" cy="20" r="15" stroke="#2A2A31" stroke-dasharray="18.85 75.4" stroke-dashoffset="-75.4"/>
+      </g>
+      <circle cx="20" cy="20" r="11.2" fill="url(#gd-joker)" stroke="#fff" stroke-opacity=".5"/>
+      <path d="M20 13.5l1.9 4.6 4.6 1.9-4.6 1.9L20 26.5l-1.9-4.6-4.6-1.9 4.6-1.9z" fill="#fff" fill-opacity=".9"/>
+    </symbol>
+
+    <!-- 비용 표시: 컷 모양 그대로 -->
+    <symbol id="pp-white" viewBox="0 0 20 20"><path d="M4.6 4.2h10.8l3.9 5.2L10 19 .7 9.4z" fill="#EEF0F4" stroke="#8B94A4" stroke-width="1.1" stroke-linejoin="round"/></symbol>
+    <symbol id="pp-blue" viewBox="0 0 20 20"><rect x="1.3" y="1.3" width="17.4" height="17.4" rx="4.6" fill="#2F6BDA" stroke="#163A80" stroke-width="1.1"/></symbol>
+    <symbol id="pp-green" viewBox="0 0 20 20"><path d="M6.2 1h7.6l5.2 5.2v7.6L13.8 19H6.2L1 13.8V6.2z" fill="#1E9E62" stroke="#0C5534" stroke-width="1.1" stroke-linejoin="round"/></symbol>
+    <symbol id="pp-red" viewBox="0 0 20 20"><ellipse cx="10" cy="10" rx="8" ry="9.3" fill="#D8403F" stroke="#7A1C1C" stroke-width="1.1"/></symbol>
+    <symbol id="pp-black" viewBox="0 0 20 20"><path d="M10 .6l8.4 4.8v9.2L10 19.4l-8.4-4.8V5.4z" fill="#2A2A31" stroke="#8A8A98" stroke-width="1.1" stroke-linejoin="round"/></symbol>
+    <symbol id="pp-pearl" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.9" fill="#F3DCE4" stroke="#B98A9C" stroke-width="1.1"/><circle cx="7" cy="6.8" r="1.6" fill="#fff"/></symbol>
+    <symbol id="pp-gold" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.9" fill="#E9B832" stroke="#8C650C" stroke-width="1.1"/></symbol>
+
+    <!-- 아이콘 -->
+    <symbol id="ic-crown" viewBox="0 0 20 20"><path d="M2.6 14.6h14.8l1.5-9.1-4.6 3.7L10 2.9 5.7 9.2 1.1 5.5z" fill="url(#gd-brass)" stroke="#7A5A1E" stroke-width="1" stroke-linejoin="round"/><rect x="3" y="15.6" width="14" height="2.4" rx=".8" fill="url(#gd-brass)" stroke="#7A5A1E" stroke-width=".8"/></symbol>
+    <symbol id="ic-extra" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.8 8.2A6.2 6.2 0 0 0 4.6 5.9"/><path d="M3.8 2.8v3.7h3.7"/><path d="M4.2 11.8a6.2 6.2 0 0 0 11.2 2.3"/><path d="M16.2 17.2v-3.7h-3.7"/></g></symbol>
+    <symbol id="ic-steal" viewBox="0 0 20 20"><path d="M6.2 11V5.2a1.25 1.25 0 0 1 2.5 0V9.6M8.7 9.4V3.6a1.25 1.25 0 0 1 2.5 0v5.8M11.2 9.4V4.6a1.25 1.25 0 0 1 2.5 0v5.2M13.7 10V7.2a1.25 1.25 0 0 1 2.5 0v5c0 3.6-2.3 6.2-5.8 6.2-2.5 0-3.8-1.1-5-3L2.9 11.6a1.35 1.35 0 0 1 2.1-1.7L6.2 11" fill="#FBEFD9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-scroll" viewBox="0 0 20 20"><path d="M5.2 3.2h10.2a2.1 2.1 0 0 1 2.1 2.1v.9h-2.6v9.9a2.1 2.1 0 0 1-2.1 2.1H4.6a2.1 2.1 0 0 1-2.1-2.1v-.9h2.6V5.3a2.1 2.1 0 0 1 .1-.6" fill="url(#gd-scroll)" stroke="#8A6A2A" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.6 7.4h5M7.6 10h5M7.6 12.6h3.2" stroke="#9C7A36" stroke-width="1.1" stroke-linecap="round"/><circle cx="14.6" cy="15.2" r="1.9" fill="#C2413F" stroke="#7E2020" stroke-width=".7"/></symbol>
+    <symbol id="ic-bag" viewBox="0 0 20 20"><path d="M7 4.2h6l-1.3 2.3c3.6 1.4 5.6 4.7 5.6 7.5 0 2.4-1.9 3.8-4.4 3.8H7.1c-2.5 0-4.4-1.4-4.4-3.8 0-2.8 2-6.1 5.6-7.5z" fill="#7B5B3A" stroke="#D6AE5C" stroke-width="1.2" stroke-linejoin="round"/><path d="M7.3 6.6h5.4" stroke="#D6AE5C" stroke-width="1.2" stroke-linecap="round"/></symbol>
+    <symbol id="ic-refill" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5a6.5 6.5 0 1 1-6.1 4.3"/><path d="M3.2 3.8l.7 4 4-.7"/></g><circle cx="10" cy="10" r="2" fill="currentColor"/></symbol>
+    <symbol id="ic-menu" viewBox="0 0 20 20"><path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h13" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+    <symbol id="ic-log" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 6v4.3l2.8 1.8"/></g></symbol>
+    <symbol id="ic-smile" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10" cy="10" r="7.4"/><path d="M6.9 11.8c.8 1.3 1.9 2 3.1 2s2.3-.7 3.1-2"/></g><circle cx="7.4" cy="8" r="1.1" fill="currentColor"/><circle cx="12.6" cy="8" r="1.1" fill="currentColor"/></symbol>
+    <symbol id="ic-close" viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="ic-share" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5V3M6.5 6.3L10 2.8l3.5 3.5"/><path d="M5.5 9H4.3v8h11.4V9h-1.2"/></g></symbol>
+    <symbol id="ic-copy" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><rect x="6.5" y="6.5" width="10" height="10.5" rx="2"/><path d="M13.5 6.5V4.8a1.8 1.8 0 0 0-1.8-1.8H5a1.8 1.8 0 0 0-1.8 1.8v7a1.8 1.8 0 0 0 1.8 1.8h1.5"/></g></symbol>
+    <symbol id="ic-sound" viewBox="0 0 20 20"><path d="M3.5 7.5h3l4-3.5v12l-4-3.5h-3z" fill="currentColor"/><path d="M13.3 7a4.3 4.3 0 0 1 0 6M15.6 4.8a7.3 7.3 0 0 1 0 10.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="ic-mute" viewBox="0 0 20 20"><path d="M3.5 7.5h3l4-3.5v12l-4-3.5h-3z" fill="currentColor"/><path d="M13.2 7.6l4.6 4.8M17.8 7.6l-4.6 4.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="ic-flag" viewBox="0 0 20 20"><path d="M5 18V3M5 3.8c3.5-1.8 6 1.6 10.5-.2v7.6c-4.5 1.8-7-1.6-10.5.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-home" viewBox="0 0 20 20"><path d="M3 9.5L10 3.5l7 6M5 8.2V17h3.8v-4.6h2.4V17H15V8.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-book" viewBox="0 0 20 20"><path d="M10 5.2C8.3 3.8 5.8 3.4 3 3.6v11.8c2.8-.2 5.3.2 7 1.6 1.7-1.4 4.2-1.8 7-1.6V3.6c-2.8-.2-5.3.2-7 1.6zM10 5.2V17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-people" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="6.8" r="2.8"/><path d="M1.8 16.5c.4-3 2.5-4.8 5.2-4.8s4.8 1.8 5.2 4.8"/><circle cx="14" cy="7.6" r="2.3"/><path d="M13.6 11.8c2.4 0 4.1 1.5 4.6 4.2"/></g></symbol>
+    <symbol id="ic-bot" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="3.5" y="6.5" width="13" height="9.5" rx="3"/><path d="M10 6.5V3.8" stroke-linecap="round"/></g><circle cx="10" cy="3.2" r="1.2" fill="currentColor"/><circle cx="7.5" cy="11" r="1.4" fill="currentColor"/><circle cx="12.5" cy="11" r="1.4" fill="currentColor"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.2 2.2 3.2 4.7 3.2 7.5s-1 5.3-3.2 7.5c-2.2-2.2-3.2-4.7-3.2-7.5s1-5.3 3.2-7.5z"/></g></symbol>
+    <symbol id="ic-arrow" viewBox="0 0 20 20"><path d="M7.5 4.5L13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 20 20"><path d="M4.5 10.5l3.6 3.6 7.4-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-cards" viewBox="0 0 20 20"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="6.5" y="3" width="9.5" height="13" rx="1.6"/><path d="M6.5 5.5l-2.4.9a1.2 1.2 0 0 0-.7 1.5l3 8.3"/></g></symbol>
+    <symbol id="ic-gem" viewBox="0 0 40 40">
+      <path d="M11 9h18l7 9-16 17L4 18z" fill="#7FA6F0"/>
+      <path d="M4 18h32L20 35z" fill="#2F6BDA"/>
+      <path d="M11 9l4 9 5-9 5 9 4-9" fill="none" stroke="#DCE8FF" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M15 18l5 17 5-17" fill="none" stroke="#1C438F" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M11 9h18l7 9-16 17L4 18z" fill="none" stroke="#10306E" stroke-width="1.4" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+
+  <div id="app" class="app">
+    <!-- 홈 -->
+    <section id="scr-home" class="screen" aria-label="홈">
+      <div class="home-wrap" id="home-root"></div>
+    </section>
+    <!-- 대기실 -->
+    <section id="scr-lobby" class="screen" hidden aria-label="대기실">
+      <div class="lobby-wrap" id="lobby-root"></div>
+    </section>
+    <!-- 게임 -->
+    <section id="scr-game" class="screen" hidden aria-label="게임">
+      <header class="topbar" id="g-top"></header>
+      <div class="netbar" id="g-net" hidden></div>
+      <main class="game-grid" id="g-grid">
+        <div class="area area-opp" id="g-opp"></div>
+        <div class="area area-banner" id="g-banner" aria-live="polite"></div>
+        <div class="area area-market" id="g-market"></div>
+        <div class="area area-board" id="g-board"></div>
+        <div class="area area-me" id="g-me"></div>
+      </main>
+      <div class="actionbar" id="g-bar"></div>
+    </section>
+    <!-- 결과 -->
+    <section id="scr-result" class="screen" hidden aria-label="결과">
+      <div class="result-wrap" id="result-root"></div>
+    </section>
+  </div>
+
+  <div id="sheet-root"></div>
+  <div id="toast-root" aria-live="assertive"></div>
+  <div id="emote-layer" aria-hidden="true"></div>
+
+  <noscript><p class="noscript">이 게임은 자바스크립트가 켜져 있어야 해요.</p></noscript>
+</body>
+</html>

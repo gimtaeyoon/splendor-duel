@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>스플렌더 대결</title>
+  <defs>
+    <radialGradient id="velvet" cx="50%" cy="38%" r="75%">
+      <stop offset="0" stop-color="#4A3659"/>
+      <stop offset=".6" stop-color="#2B1E36"/>
+      <stop offset="1" stop-color="#1A1121"/>
+    </radialGradient>
+    <linearGradient id="brass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0CF83"/>
+      <stop offset=".5" stop-color="#D6AE5C"/>
+      <stop offset="1" stop-color="#9C7A36"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#6E9CF2" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#6E9CF2" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="nap" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="10" height="10" fill="none"/>
+      <path d="M0 0h10" stroke="#ffffff" stroke-opacity=".025" stroke-width="3"/>
+    </pattern>
+  </defs>
+  <!-- 벨벳 바탕 (마스커블 안전 영역을 고려해 가득 채움) -->
+  <rect width="512" height="512" fill="url(#velvet)"/>
+  <rect width="512" height="512" fill="url(#nap)"/>
+  <!-- 황동 받침 링 -->
+  <circle cx="256" cy="262" r="176" fill="none" stroke="url(#brass)" stroke-width="10" opacity=".9"/>
+  <circle cx="256" cy="262" r="160" fill="none" stroke="#D6AE5C" stroke-opacity=".25" stroke-width="2"/>
+  <circle cx="256" cy="250" r="150" fill="url(#glow)"/>
+  <!-- 깎은 보석 -->
+  <g transform="translate(256 262)">
+    <path d="M-92 -70H92L140 -10 0 142 -140 -10Z" fill="#1C438F"/>
+    <path d="M-92 -70H92L140 -10H-140Z" fill="#5E8FEA"/>
+    <path d="M-92 -70L-52 -10 0 -70 52 -10 92 -70Z" fill="#9DBDF7"/>
+    <path d="M-92 -70L-140 -10H-52Z" fill="#3F74DB"/>
+    <path d="M92 -70L140 -10H52Z" fill="#2F6BDA"/>
+    <path d="M-140 -10H-52L0 142Z" fill="#2A5CC0"/>
+    <path d="M-52 -10H52L0 142Z" fill="#3A74E0"/>
+    <path d="M52 -10H140L0 142Z" fill="#1E4CA8"/>
+    <path d="M-92 -70H92L140 -10 0 142 -140 -10Z" fill="none" stroke="#0E2A63" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M-140 -10H140M-92 -70L-52 -10 0 -70 52 -10 92 -70M-52 -10L0 142 52 -10" fill="none" stroke="#DCE8FF" stroke-opacity=".55" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M-60 -58L-30 -58 -48 -22Z" fill="#fff" opacity=".75"/>
+  </g>
+  <!-- 반짝임 -->
+  <path d="M384 136l7 18 18 7-18 7-7 18-7-18-18-7 18-7z" fill="#F4ECDD" opacity=".9"/>
+  <path d="M134 356l5 12 12 5-12 5-5 12-5-12-12-5 12-5z" fill="#F4ECDD" opacity=".7"/>
+</svg>

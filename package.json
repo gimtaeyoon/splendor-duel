@@ -1,0 +1,14 @@
+{
+  "name": "splendor-duel-kr",
+  "version": "1.0.0",
+  "private": true,
+  "description": "스플렌더 대결 — 두 사람이 멀리 떨어져서도 즐기는 웹/모바일 게임",
+  "scripts": {
+    "start": "node tools/serve.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "test:net": "node --test \"tests/net/*.test.js\""
+  },
+  "devDependencies": {
+    "mqtt": "5.16.0"
+  }
+}
